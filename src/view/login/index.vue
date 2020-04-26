@@ -8,7 +8,7 @@
           alt=""
           class="login-img"
         />
-        <span class="title">后台</span>
+        <span class="title">佳欣后台</span>
         <span class="title-1"></span>
         <span class="title">用户登录</span>
       </div>
@@ -36,7 +36,7 @@
               </el-input>
             </el-col>
             <el-col :span="8">
-              <img src="../../assets/下载.jpg" alt=""/>
+              <img :src="imageURL" alt="" @click="toImg"/>
             </el-col>
           </el-row>
         </el-form-item>
@@ -62,6 +62,10 @@
 </template>
 
 <script>
+//导入token设置
+import {setToken} from '@/utils/token.js'
+//导入接口
+import {toLogin} from '@/api/login.js'
 //导入对话框
 import register from './components/register'
 import {checkAgree,checkMobile} from '../../utils/validator'
@@ -72,6 +76,7 @@ export default {
   },
   data() {
     return {
+      imageURL:process.env.VUE_APP_BASEURL+"/captcha?type=login",
        ruleForm: {
           phone:'',
           password:'',
@@ -97,12 +102,34 @@ export default {
     }
   },
   methods: {
+    toImg(){
+      //刷新图片
+      this.imageURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&t="+Date.now()
+    },
     //判断
     submitForm(){
       this.$refs.ruleForm.validate((v)=>{
         //用户全部输入正确
         if (v) {
-            alert('submit!');
+            // alert('submit!');
+          toLogin({
+            phone:this.ruleForm.phone,
+            password:this.ruleForm.password,
+            code:this.ruleForm.code
+          })
+          .then(res=>{
+            console.log(res)
+           if(res.data.code==200){
+              setToken(res.data.data.token)
+            this.$message.success('登录成功')
+            setTimeout(()=>{
+              this.$router.push('/index/shuju')
+            },1000)
+            // this.$router.push('/index')
+           }else{
+             this.$message.error(res.data.message)
+           }
+          })
           } else {
             console.log('error submit!!');
             return false;
