@@ -64,7 +64,7 @@
 <script>
 import {getInfo,loginOut} from '@/api/index.js'
 //导入token删除方法
-import {remToken} from '@/utils/token.js'
+import {remToken,getToken} from '@/utils/token.js'
 export default {
     data() {
         return {
@@ -94,8 +94,19 @@ export default {
             if(res.data.code==200){
                 this.username=res.data.data.username
                 this.avatar=process.env.VUE_APP_BASEURL+"/"+res.data.data.avatar
+            }else if(res.data.code==206){
+                this.$message.error('登录状态异常,请重新登录')
+                this.$router.push('/login')
+                //删除伪造token
+                remToken()
             }
         })
+        }
+    },
+    beforeCreate() {
+        if(getToken()==null){
+            this.$message.error('未登录,请登录')
+            this.$router.push('/login')
         }
     },
 };

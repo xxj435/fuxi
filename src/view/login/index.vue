@@ -142,6 +142,9 @@ export default {
     this.$refs.register.dialogFormVisible=true
   }
   },
+  beforeCreate() {
+      document.title = '登录'
+    },
 };
 </script>
 
