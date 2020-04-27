@@ -18,6 +18,8 @@ import {remToken} from '@/utils/token.js'
 //导入路由
 import VueRouter from 'vue-router'
 import { Message } from 'element-ui'
+//导入vuex
+import store from '@/store/index.js'
 //注册路由
 Vue.use(VueRouter)
 //实例化
@@ -59,6 +61,8 @@ const router=new VueRouter({
     getInfo().then(res=>{
         if(res.data.code==200){
             //代表token是对的.直接放行
+        store.commit('changeUsername',res.data.data.username)
+        store.commit('changeAvatar',res.data.data.avatar)
             next()
         }else{
             //弹出提示

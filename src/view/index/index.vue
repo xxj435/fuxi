@@ -15,11 +15,11 @@
       <!-- 右边 -->
       <div class="right">
         <img
-          :src="avatar"
+          :src='avatar'
           alt=""
           class="right-img"
         />
-        <span class="right-title">{{username}}</span>
+        <span class="right-title">{{$store.state.username}}</span>
         <button class="right-button" @click='toLogin'>退出</button>
       </div>
     </el-header>
@@ -62,20 +62,19 @@
 </template>
 
 <script>
-import {getInfo,loginOut} from '@/api/index.js'
+import {loginOut} from '@/api/index.js'
 //导入token删除方法
 import {remToken,getToken} from '@/utils/token.js'
 export default {
     data() {
         return {
-            username:'',
-            avatar:'',
-            bol:false
+            bol:false,
+            avatar:process.env.VUE_APP_BASEURL+"/"+this.$store.state.avatar
         }
     },
-    created() {
-        this.ha()
-    },
+    // created() {
+    //     // this.ha()
+    // },
     methods: {
         
         toLogin(){
@@ -85,23 +84,26 @@ export default {
                     remToken()
                     this.$message.success('退出成功')
                     this.$router.push('/login')
+                    //清空vuex数据
+                    this.$store.commit('changeUsername','')
+                    this.$store.commit('changeAvatar','')
                 }
             })
         },
-        ha(){
-               getInfo().then(res=>{
-            // console.log(res)
-            if(res.data.code==200){
-                this.username=res.data.data.username
-                this.avatar=process.env.VUE_APP_BASEURL+"/"+res.data.data.avatar
-            }else if(res.data.code==206){
-                this.$message.error('登录状态异常,请重新登录')
-                this.$router.push('/login')
-                //删除伪造token
-                remToken()
-            }
-        })
-        }
+        // ha(){
+        //        getInfo().then(res=>{
+        //     // console.log(res)
+        //     if(res.data.code==200){
+        //         this.username=res.data.data.username
+        //         this.avatar=process.env.VUE_APP_BASEURL+"/"+res.data.data.avatar
+        //     }else if(res.data.code==206){
+        //         this.$message.error('登录状态异常,请重新登录')
+        //         this.$router.push('/login')
+        //         //删除伪造token
+        //         remToken()
+        //     }
+        // })
+        // }
     },
     beforeCreate() {
         if(getToken()==null){
